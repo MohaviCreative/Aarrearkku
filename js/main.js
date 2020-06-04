@@ -216,7 +216,7 @@ function CreateText(i){
 }
 
 function EditText(text){
-    text.style.fontSize = text.offsetHeight/4;
+    text.style.fontSize = text.offsetHeight/4.5;
 }
 
 function ButtonPress(i, isImage)
