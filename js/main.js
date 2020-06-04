@@ -7,7 +7,7 @@ var body = document.getElementsByTagName("body")[0];
 var parent = document.createElement("div");
 body.append(parent);
 parent.style.position = "absolute";
-parent.style.backgroundColor = "blue";
+//parent.style.backgroundColor = "blue";
 
 body.style.overflowY= "hidden";
 body.style.overflowX= "hidden";
@@ -209,6 +209,7 @@ function CreateText(i){
 
     body.appendChild(button);
     button.style.position = "absolute";
+    button.className = "w3-button w3-green";
 
     AddHandler(button, i, false);
 
