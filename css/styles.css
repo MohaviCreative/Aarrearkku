@@ -10,13 +10,16 @@ canvas {
     height:25px; 
     float: right;
 }
+w3-dropdown-hover {
+    background-color: none;
+}
 
 .logoArea {
-    color: darkred;
+    color: white;
     z-index: 1;
 }
 .logoArea img{
-    max-width: 200px;
+    max-width: 150px;
     float: left;
 }
 .logoArea h1{
