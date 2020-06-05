@@ -10,8 +10,8 @@ canvas {
     height:25px; 
     float: right;
 }
-w3-dropdown-hover {
-    background-color: none;
+.w3-dropdown-hover:first-child {
+    background-color: rgba(0,0,0,0);
 }
 
 .logoArea {
