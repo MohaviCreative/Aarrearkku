@@ -1,5 +1,7 @@
 body { 
-    margin: 0; 
+    margin: 0;
+    background-image: url('../Art/Pelit/piratePatern.png');
+    background-repeat: repeat;
 }
 canvas { 
     display: block; 
@@ -15,7 +17,7 @@ canvas {
 }
 
 .logoArea {
-    color: white;
+    color: black;
     z-index: 1;
 }
 .logoArea img{
@@ -42,9 +44,6 @@ body,h1 {font-family: "Raleway", sans-serif}
 
 body, html {height: 100%}
 
-.bgimg {
-  background-image: url('../assets/forestbridge.jpg');
-  min-height: 100%;
-  background-position: center;
-  background-size: cover;
+.w3-red {
+    pointer-events: none;
 }
