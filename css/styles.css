@@ -1,0 +1,31 @@
+body { 
+    margin: 0; 
+}
+canvas { 
+    display: block; 
+}
+
+.w3-bar-item img {
+    width:50px;
+    height:25px; 
+    float: right;
+}
+
+.logoArea {
+    color: darkred;
+    z-index: 1;
+}
+.logoArea img{
+    max-width: 200px;
+    float: left;
+}
+.logoArea h1{
+    max-width: 200px;
+    float: left;
+    margin: 50px 20px;
+}
+
+.w3-btn, .w3-button {
+    padding: 0;
+    white-space: pre-wrap;
+}
