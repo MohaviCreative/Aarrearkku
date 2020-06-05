@@ -10,13 +10,16 @@ canvas {
     height:25px; 
     float: right;
 }
+.w3-dropdown-hover:first-child {
+    background-color: rgba(0,0,0,0);
+}
 
 .logoArea {
-    color: darkred;
+    color: white;
     z-index: 1;
 }
 .logoArea img{
-    max-width: 200px;
+    max-width: 150px;
     float: left;
 }
 .logoArea h1{
@@ -28,4 +31,20 @@ canvas {
 .w3-btn, .w3-button {
     padding: 0;
     white-space: pre-wrap;
+}
+
+.dropDownBtn {
+    padding: 5px 15px;
+    text-align: center;
+}
+
+body,h1 {font-family: "Raleway", sans-serif}
+
+body, html {height: 100%}
+
+.bgimg {
+  background-image: url('../assets/forestbridge.jpg');
+  min-height: 100%;
+  background-position: center;
+  background-size: cover;
 }

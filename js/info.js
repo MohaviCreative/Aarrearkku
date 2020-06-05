@@ -1,7 +1,6 @@
 
 var spriteMap = [
     "Art/Eläimet/Hämähäkki_väri.jpg",
-    "Art/Eläimet/Hamsteri_väri.jpg",
     "Art/Eläimet/Hevonen_väri.jpg",
     "Art/Eläimet/Hiiri_väri.jpg",
     "Art/Eläimet/Käärme_väri.jpg",
@@ -19,17 +18,26 @@ var spriteMap = [
 var audios=
     [
         'Sounds/English/Animals/ENhamahakki.mp3',
-        'Sounds/English/Animals/ENmarso.mp3',
         'Sounds/English/Animals/ENhevonen.mp3',
         'Sounds/English/Animals/ENhiiri.mp3',
         'Sounds/English/Animals/ENkarme.mp3',
         'Sounds/English/Animals/ENkala.mp3',
-        'Sounds/English/Animals/ENkani.mp3'
+        'Sounds/English/Animals/ENkani.mp3',
+        'Sounds/English/Animals/ENkissa.mp3',
+        'Sounds/English/Animals/ENkoira.mp3',
+        'Sounds/English/Animals/ENlintu.mp3',
+        'Sounds/English/Animals/ENlisko.mp3',
+        'Sounds/English/Animals/ENmarso.mp3',
+        'Sounds/English/Animals/ENrotta.mp3',
     ]
+
+var feedbackAudio=[
+    'Sounds/English/Comments/ENgoodwork.mp3',
+    'Sounds/English/Comments/ENtryagain.mp3'
+]
 
 var sentences = [
     "spider",
-    "hamster",
     "horse",
     "mouse",
     "snake",

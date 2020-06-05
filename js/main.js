@@ -7,13 +7,14 @@ var body = document.getElementsByTagName("body")[0];
 var parent = document.createElement("div");
 body.append(parent);
 parent.style.position = "absolute";
-//parent.style.backgroundColor = "blue";
+//parent.style.backgroundColor = "rgba(0,255,0,0.2)";
 
 body.style.overflowY= "hidden";
 body.style.overflowX= "hidden";
 var chosen;
 var animationX=0;
 var animation;
+var pressed=[];
 
 
 var mouseDown = false;
@@ -27,7 +28,10 @@ document.addEventListener( 'mousemove', OnMouseMove, false );
 
 var currentSound = 0;
 var sounds = [];
-CreateAudios();
+CreateAudios(audios, sounds);
+var feedbackSound = [];
+CreateAudios(feedbackAudio, feedbackSound)
+
 
 var texts = [];
 CreateTexts();
@@ -46,6 +50,7 @@ Resize();
 window.onload = function()
 {
     window.onresize = Resize;
+    Resize();
 }
 
 function Resize()
@@ -105,7 +110,8 @@ function Resize()
 
             ImageScale(random[num], size, texts);
             const imageSize = texts[random[num]].offsetWidth / parent.offsetWidth;
-            var testing = new THREE.Vector2( 50 + (spaceX * imageSize * multiplierX), 75 + (spaceY * imageSize * multiplierY));
+            var testing = new THREE.Vector2( 50 + (spaceX * imageSize * multiplierX), 
+                                            75 + (spaceY * imageSize * multiplierY));
             ImagePosition(random[num], testing, texts);
             EditText(texts[random[num]]);
 
@@ -209,7 +215,6 @@ function CreateText(i){
 
     body.appendChild(button);
     button.style.position = "absolute";
-    button.className = "w3-button w3-green";
 
     AddHandler(button, i, false);
 
@@ -222,30 +227,41 @@ function EditText(text){
 
 function ButtonPress(i, isImage)
 {
-    sounds[i].play();
+    if(!isImage && pressed[i]){
+        return;
+    }
 
     if(!isImage){
+        pressed[i] = true;
         if(chosen == i){
-            animation = setInterval(Animation, 1);
+            feedbackSound[0].play();
+            setTimeout(function () {
+                animation = setInterval(Animation, 1);
+            },feedbackSound[0].duration*1000);
+        }else{
+            feedbackSound[1].play();
+            texts[i].className = "w3-button w3-round-large w3-red";
         }
+    }else{
+        sounds[i].play();
     }
 }
 
 
 
-function CreateAudios()
+function CreateAudios(usedAudios, putAudios)
 {
-
-    for(i = 0; i < audios.length; i++)
+    for(i = 0; i < usedAudios.length; i++)
     {
-        CreateAudio(i, audios);
+        putAudios[i] = CreateAudio(i, usedAudios[i]);
     }
 }
 
-function CreateAudio(i, audios)
+function CreateAudio(i, source)
 {
-    sounds[i] = document.createElement("audio");
-    sounds[i].src = audios[i];
+    var theSound = document.createElement("audio");
+    theSound.src = source;
+    return theSound;
 }
 
 function CreateTexts(){
@@ -266,6 +282,7 @@ function CreateImages()
         button.style.position = "absolute";
         button.style.width = 100 + "px";
         button.style.height = 100 + "px";
+        button.className="w3-round-large";
 
         button.src = spriteMap[i]; 
 
@@ -302,6 +319,8 @@ function ChooseRandom()
         }while(random.includes(num));
         random[i] = num;
         texts[num].style.display = "block";
+        texts[num].className = "w3-button w3-light-grey w3-round-large";
+        pressed[num] = false;
     }
 
     chosen = random[Math.floor(Math.random() * random.length)];
@@ -318,16 +337,21 @@ function AddHandler(button, i, isImage)
 var times = 0;
 const maxTimes=300;
 var animationDone = false;
+
 function Animation(){
     times++;
-    animationX -= Math.sin(times/maxTimes);
+    animationX -= Math.sin(times / maxTimes);
     Resize();
-    if(times>maxTimes){
-        if(!animationDone){
+    if(times > maxTimes)
+    {
+        if(!animationDone)
+        {
             animationDone=true;
             animationX*=-1;
             ChooseRandom();
-        }else{
+        }
+        else
+        {
             animationDone=false;
             clearInterval(animation);
             ButtonPress(chosen, true);
