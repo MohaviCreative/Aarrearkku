@@ -36,7 +36,9 @@ canvas {
 }
 
 body,h1 {font-family: "Raleway", sans-serif}
+
 body, html {height: 100%}
+
 .bgimg {
   background-image: url('../assets/forestbridge.jpg');
   min-height: 100%;
