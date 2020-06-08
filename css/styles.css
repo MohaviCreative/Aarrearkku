@@ -44,6 +44,19 @@ body,h1 {font-family: "Raleway", sans-serif}
 
 body, html {height: 100%}
 
+.w3-light-grey {
+    -moz-outline:0 none;
+    outline:0 none;
+}
+
 .w3-red {
     pointer-events: none;
+    -moz-outline:0 none;
+    outline:0 none;
+}
+
+.w3-green {
+    pointer-events: none;
+    -moz-outline:0 none;
+    outline:0 none;
 }

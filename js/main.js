@@ -5,16 +5,21 @@ var random = [];
 // 2. Append somewhere
 var body = document.getElementsByTagName("body")[0];
 var parent = document.createElement("div");
+var animationOn = false;
+const baseButtonClass = "w3-button w3-round-large ";
 body.append(parent);
 parent.style.position = "absolute";
 //parent.style.backgroundColor = "rgba(0,255,0,0.2)";
 
-body.style.overflowY= "hidden";
-body.style.overflowX= "hidden";
+body.style.overflowY = "hidden";
+body.style.overflowX = "hidden";
 var chosen;
-var animationX=0;
+var animationX = 0;
 var animation;
-var pressed=[];
+var pressed = [];
+
+var language = -1;
+var subject = -1;
 
 
 var mouseDown = false;
@@ -28,29 +33,33 @@ document.addEventListener( 'mousemove', OnMouseMove, false );
 
 var currentSound = 0;
 var sounds = [];
-CreateAudios(audios, sounds);
 var feedbackSound = [];
-CreateAudios(feedbackAudio, feedbackSound)
 
 
 var texts = [];
-CreateTexts();
 
 
 var sprite = [];
 var images = [];
-CreateImages();
 
-const optionsAmount = Math.min(6, sprite.length);
-
-ChooseRandom();
-Resize();
+var optionsAmount;
 
 
-window.onload = function()
-{
+
+function Start() {
+    LoadParameters();
+    CreateAudios(audios, sounds);
+    CreateAudios(feedbackAudio, feedbackSound);
+    CreateImages();
+    CreateTexts();
+    optionsAmount = Math.min(6, sprite.length);
+    ChooseRandom();
+
     window.onresize = Resize;
-    Resize();
+
+    setTimeout(function () {
+        Resize();
+    },25);
 }
 
 function Resize()
@@ -104,15 +113,15 @@ function Resize()
             var multiplierX = ((i + plusX) % 2 == 0 ? 1 : -1);
 
 
-            ImageScale(random[num], new THREE.Vector2(40,40), sprite);
-            ImagePosition(random[num], new THREE.Vector2(50,25), sprite);
+            ImageScale(random[num], new THREE.Vector2(40,40), texts);
+            ImagePosition(random[num], new THREE.Vector2(50,25), texts);
 
 
-            ImageScale(random[num], size, texts);
-            const imageSize = texts[random[num]].offsetWidth / parent.offsetWidth;
+            ImageScale(random[num], size, sprite);
+            const imageSize = sprite[random[num]].offsetWidth / parent.offsetWidth;
             var testing = new THREE.Vector2( 50 + (spaceX * imageSize * multiplierX), 
                                             75 + (spaceY * imageSize * multiplierY));
-            ImagePosition(random[num], testing, texts);
+            ImagePosition(random[num], testing, sprite);
             EditText(texts[random[num]]);
 
             if((i + plusX) % 2 == 0){
@@ -123,6 +132,13 @@ function Resize()
             spaceY += wholeSpace;
         }
     }
+}
+
+function LoadParameters(){
+    console.log()
+    const params=new URLSearchParams(window.location.search);
+    language = params.get("l");
+    subject = params.get("g");
 }
 
 function ImageScale(i, percentage, array, newSize)
@@ -158,7 +174,7 @@ function ImageScale(i, percentage, array, newSize)
 
 function ImagePosition(i, percentage, array)
 {
-    var animationSpeed=10;
+    var animationSpeed = 10;
     var newSize = new THREE.Vector2(parent.offsetWidth, parent.offsetHeight);
 
     var size = new THREE.Vector2(newSize.x, newSize.y);
@@ -180,33 +196,35 @@ function ImagePosition(i, percentage, array)
     array[i].style.top = newPosition.y + "px";
 }
 
-/*
-function OnMouseDown()
+function ButtonPress(i, isImage)
 {
-    mouseDown = true;
-    Raycast("rgb(0,255,0)");
-}
+    if(isImage && pressed[i] || animationOn){
+        return;
+    }
 
-function OnMouseUp()
-{
-    var i = Raycast("rgb(255, 0, 0)");
-    mouseDown = false;
-
-    if(i >- 1)
-    {
-        sounds[i].play();
-
-        currentSound++;
-        if(currentSound >= sounds.length){
-            currentSound = 0;
+    if(isImage){
+        pressed[i] = true;
+        if(chosen == i){
+            PlaySound(feedbackSound,0);
+            animationOn = true;
+            setTimeout(function () {
+                animation = setInterval(Animation, 1);
+            },feedbackSound[0].duration*1000);
+        }else{
+            PlaySound(feedbackSound, 1);
+            sprite[i].className = baseButtonClass + "w3-red";
+            sprite[i].disabled = true;
         }
+    }else{
+        PlaySound(sounds, i);
     }
 }
 
-function OnMouseMove()
-{
-    Raycast("rgb(255, 0, 0)");
-}*/
+function CreateTexts(){
+    for(i = 0; i < sentences.length; i++){
+        texts.push(CreateText(i));
+    }
+}
 
 function CreateText(i){
     var button = document.createElement("button");
@@ -225,30 +243,6 @@ function EditText(text){
     text.style.fontSize = text.offsetHeight/4.5;
 }
 
-function ButtonPress(i, isImage)
-{
-    if(!isImage && pressed[i]){
-        return;
-    }
-
-    if(!isImage){
-        pressed[i] = true;
-        if(chosen == i){
-            feedbackSound[0].play();
-            setTimeout(function () {
-                animation = setInterval(Animation, 1);
-            },feedbackSound[0].duration*1000);
-        }else{
-            feedbackSound[1].play();
-            texts[i].className = "w3-button w3-round-large w3-red";
-        }
-    }else{
-        sounds[i].play();
-    }
-}
-
-
-
 function CreateAudios(usedAudios, putAudios)
 {
     for(i = 0; i < usedAudios.length; i++)
@@ -264,12 +258,6 @@ function CreateAudio(i, source)
     return theSound;
 }
 
-function CreateTexts(){
-    for(i = 0; i < sentences.length; i++){
-        texts.push(CreateText(i));
-    }
-}
-
 function CreateImages()
 {
     for(i = 0; i < spriteMap.length; i++)
@@ -282,7 +270,8 @@ function CreateImages()
         button.style.position = "absolute";
         button.style.width = 100 + "px";
         button.style.height = 100 + "px";
-        button.className="w3-round-large";
+        button.className = baseButtonClass;
+        button.style.color = "rgb(255,0,0)"
 
         button.src = spriteMap[i]; 
 
@@ -318,13 +307,15 @@ function ChooseRandom()
             num = Math.floor(Math.random() * sprite.length);
         }while(random.includes(num));
         random[i] = num;
-        texts[num].style.display = "block";
-        texts[num].className = "w3-button w3-light-grey w3-round-large";
         pressed[num] = false;
+        sprite[num].style.display = "block";
+        sprite[num].disabled = false;
+        sprite[num].className = baseButtonClass;
     }
 
     chosen = random[Math.floor(Math.random() * random.length)];
-    sprite[chosen].style.display = "block";
+    texts[chosen].style.display = "block";
+    texts[chosen].className = baseButtonClass + "w3-light-grey";
 }
 
 function AddHandler(button, i, isImage)
@@ -346,16 +337,35 @@ function Animation(){
     {
         if(!animationDone)
         {
-            animationDone=true;
-            animationX*=-1;
+            animationDone = true;
+            animationX *= -1;
             ChooseRandom();
         }
         else
         {
-            animationDone=false;
+            animationDone = false;
             clearInterval(animation);
             ButtonPress(chosen, true);
+            animationOn = false;
         }
         times = 0;
     }
+}
+
+function PlaySound(array, i){
+    if(array.length > i && array[i] !== null && array[i] !== undefined)
+    {
+        array[i].play();
+    }
+}
+
+function GoToPage(i, o){
+    if(o === undefined )
+        o = language;
+    if(o === -1)
+        o = 0;
+    if(i === undefined || i === -1)
+        i = 0;
+
+    window.location.href = '?l=' + o + '&g=' + i;
 }

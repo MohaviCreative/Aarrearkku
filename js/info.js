@@ -36,6 +36,19 @@ var fileTypes=[
 
 var words = [
     [
+        "harmaa",
+        "keltainen",
+        "musta",
+        "oranssi",
+        "punainen",
+        "ruskea",
+        "sininen",
+        "vaaleanpunainen",
+        "valkoinen",
+        "vihreä",
+        "violetti"
+    ],
+    [
         "Hämähäkki",
         "Hevonen",
         "Hiiri",
@@ -48,19 +61,6 @@ var words = [
         "Lisko",
         "Marsu",
         "Rotta"
-    ],
-    [
-        "harmaa",
-        "keltainen",
-        "musta",
-        "oranssi",
-        "punainen",
-        "ruskea",
-        "sininen",
-        "vaaleanpunainen",
-        "valkoinen",
-        "vihreä",
-        "violetti"
     ],
     [
         "hiihtää",
@@ -140,7 +140,7 @@ var audios=
     'Sounds/English/Animals/ENkoira.mp3',
     'Sounds/English/Animals/ENlintu.mp3',
     'Sounds/English/Animals/ENlisko.mp3',
-    'Sounds/English/Animals/ENmarso.mp3',
+    'Sounds/English/Animals/ENmarsu.mp3',
     'Sounds/English/Animals/ENrotta.mp3',
 ]
 
