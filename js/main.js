@@ -209,7 +209,7 @@ function ButtonPress(i, isImage)
             animationOn = true;
             setTimeout(function () {
                 animation = setInterval(Animation, 1);
-            },feedbackSound[0].duration*1000);
+            }, feedbackSound[0].duration * 1000);
         }else{
             PlaySound(feedbackSound, 1);
             sprite[i].className = baseButtonClass + "w3-red";
@@ -360,11 +360,13 @@ function PlaySound(array, i){
 }
 
 function GoToPage(i, o){
-    if(o === undefined )
+    if(o === undefined || o === -1)
         o = language;
     if(o === -1)
         o = 0;
     if(i === undefined || i === -1)
+        i = subject;
+    if(i === -1)
         i = 0;
 
     window.location.href = '?l=' + o + '&g=' + i;
