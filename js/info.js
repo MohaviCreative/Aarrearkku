@@ -1,3 +1,116 @@
+var spriteLocation ="Sounds"
+
+var folders =[
+    "Animals",
+    "Colors",
+    "Feedback",
+    "Hobbies",
+    "Numbers",
+    "Weather"
+]
+
+var languages = [
+    "Swedish",
+    "English",
+    "German",
+    "Chinese",
+    "Russian",
+    "Spanish",
+    "French"
+]
+
+var languageShorts = [
+    "SV",
+    "EN",
+    "DE",
+    "ki",
+    "RU",
+    "ES",
+    "fr"
+]
+
+var fileTypes=[
+    "mp3",
+    "m4a"
+]
+
+var words = [
+    [
+        "Hämähäkki",
+        "Hevonen",
+        "Hiiri",
+        "Käärme",
+        "Kala",
+        "Kani",
+        "Kissa",
+        "Koira",
+        "Lintu",
+        "Lisko",
+        "Marsu",
+        "Rotta"
+    ],
+    [
+        "harmaa",
+        "keltainen",
+        "musta",
+        "oranssi",
+        "punainen",
+        "ruskea",
+        "sininen",
+        "vaaleanpunainen",
+        "valkoinen",
+        "vihreä",
+        "violetti"
+    ],
+    [
+        "hiihtää",
+        "luistella",
+        "pelatajääkiekkoa",
+        "pelatajalkapalloa",
+        "piirtää",
+        "ratsastaa",
+        "soittaakitaraa",
+        "soittaapianoa",
+        "tanssia",
+        "voimistella"
+    ],
+    [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20"
+    ],
+    [
+        "auurinkopaistaa",
+        "millainensääon",
+        "onhuonosää",
+        "onhyväsää",
+        "onkuuma",
+        "onkylmää",
+        "onpilvistä",
+        "sataa",
+        "sataalunta",
+        "tuulee"
+    ]
+]
+
+
 
 var spriteMap = [
     "Art/Eläimet/Hämähäkki_väri.jpg",
@@ -16,24 +129,24 @@ var spriteMap = [
 
 
 var audios=
-    [
-        'Sounds/English/Animals/ENhamahakki.mp3',
-        'Sounds/English/Animals/ENhevonen.mp3',
-        'Sounds/English/Animals/ENhiiri.mp3',
-        'Sounds/English/Animals/ENkarme.mp3',
-        'Sounds/English/Animals/ENkala.mp3',
-        'Sounds/English/Animals/ENkani.mp3',
-        'Sounds/English/Animals/ENkissa.mp3',
-        'Sounds/English/Animals/ENkoira.mp3',
-        'Sounds/English/Animals/ENlintu.mp3',
-        'Sounds/English/Animals/ENlisko.mp3',
-        'Sounds/English/Animals/ENmarso.mp3',
-        'Sounds/English/Animals/ENrotta.mp3',
-    ]
+[
+    'Sounds/English/Animals/ENhamahakki.mp3',
+    'Sounds/English/Animals/ENhevonen.mp3',
+    'Sounds/English/Animals/ENhiiri.mp3',
+    'Sounds/English/Animals/ENkarme.mp3',
+    'Sounds/English/Animals/ENkala.mp3',
+    'Sounds/English/Animals/ENkani.mp3',
+    'Sounds/English/Animals/ENkissa.mp3',
+    'Sounds/English/Animals/ENkoira.mp3',
+    'Sounds/English/Animals/ENlintu.mp3',
+    'Sounds/English/Animals/ENlisko.mp3',
+    'Sounds/English/Animals/ENmarso.mp3',
+    'Sounds/English/Animals/ENrotta.mp3',
+]
 
 var feedbackAudio=[
-    'Sounds/English/Comments/ENgoodwork.mp3',
-    'Sounds/English/Comments/ENtryagain.mp3'
+    'Sounds/English/Feedback/ENgoodwork.mp3',
+    'Sounds/English/Feedback/ENtryagain.mp3'
 ]
 
 var sentences = [

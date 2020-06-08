@@ -335,7 +335,7 @@ function AddHandler(button, i, isImage)
 }
 
 var times = 0;
-const maxTimes=300;
+const maxTimes = 300;
 var animationDone = false;
 
 function Animation(){
