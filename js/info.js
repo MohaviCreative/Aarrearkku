@@ -1,6 +1,6 @@
 var spriteLocation ="Sounds"
 
-var folders =[
+var folders = [
     "Colors",
     "Animals",
     "Hobbies",
@@ -28,7 +28,7 @@ var languageShorts = [
     "fr"
 ]
 
-var fileTypes=[
+var fileTypes = [
     "m4a",
     "mp3",
     "m4a",
@@ -114,10 +114,15 @@ var words = [
     ]
 ]
 
-var feedbackAudio=[
-    'ENgoodwork.mp3',
-    'ENtryagain.mp3'
+var feedbackAudio = [
+    'welldone',
+    'tryagain'
 ]
+
+function GetFeedback(language){
+    var path = "Sounds/" + languages[language] + "/Feedback/" + languageShorts[language];
+    return GetFiles(fileTypes[language], path, feedbackAudio);
+}
 
 function GetSounds(language, subject){
     var path = "Sounds/" + languages[language] + "/" + folders[subject] + "/" + languageShorts[language];
@@ -134,6 +139,7 @@ function GetFiles(fileType, path, wordList, extra){
     var allFiles = []
     for(i = 0; i < wordList.length; i++){
         allFiles[i] = GetFile(path, wordList[i] ,fileType, extra);
+        console.log(allFiles[i]);
     }
     return allFiles;
 }

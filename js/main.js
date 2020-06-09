@@ -50,7 +50,9 @@ function Start() {
     LoadParameters();
     var correctSounds = GetSounds(language, subject);
     CreateAudios(correctSounds, sounds);
-    CreateAudios(feedbackAudio, feedbackSound);
+    var correctFeedback = GetFeedback(language);
+    CreateAudios(correctFeedback, feedbackSound);
+    console.log(correctFeedback);
     CreateImages();
     CreateTexts();
     optionsAmount = Math.min(6, sprite.length);
@@ -353,8 +355,8 @@ function Animation(){
         {
             animationDone = false;
             clearInterval(animation);
-            ButtonPress(chosen, true);
             animationOn = false;
+            ButtonPress(chosen, true);
         }
         times = 0;
     }
