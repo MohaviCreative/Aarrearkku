@@ -48,7 +48,9 @@ var optionsAmount;
 
 function Start() {
     LoadParameters();
-    CreateAudios(audios, sounds);
+    console.log(subject);
+    var correctSounds = GetFiles(language, subject);
+    CreateAudios(correctSounds, sounds);
     CreateAudios(feedbackAudio, feedbackSound);
     CreateImages();
     CreateTexts();
@@ -135,10 +137,16 @@ function Resize()
 }
 
 function LoadParameters(){
-    console.log()
-    const params=new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search);
     language = params.get("l");
     subject = params.get("g");
+    
+    if(language === undefined || subject === null)
+        language = 0;
+    
+    if(subject === undefined || subject === null)
+        subject = 0;
+    console.log(subject);
 }
 
 function ImageScale(i, percentage, array, newSize)

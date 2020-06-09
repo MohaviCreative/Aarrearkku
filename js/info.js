@@ -1,9 +1,8 @@
 var spriteLocation ="Sounds"
 
 var folders =[
-    "Animals",
     "Colors",
-    "Feedback",
+    "Animals",
     "Hobbies",
     "Numbers",
     "Weather"
@@ -30,6 +29,11 @@ var languageShorts = [
 ]
 
 var fileTypes=[
+    "m4a",
+    "mp3",
+    "m4a",
+    "m4a",
+    "mp3",
     "mp3",
     "m4a"
 ]
@@ -49,18 +53,18 @@ var words = [
         "violetti"
     ],
     [
-        "Hämähäkki",
-        "Hevonen",
-        "Hiiri",
-        "Käärme",
-        "Kala",
-        "Kani",
-        "Kissa",
-        "Koira",
-        "Lintu",
-        "Lisko",
-        "Marsu",
-        "Rotta"
+        "hämähäkki",
+        "hevonen",
+        "hiiri",
+        "käärme",
+        "kala",
+        "kani",
+        "kissa",
+        "koira",
+        "lintu",
+        "lisko",
+        "marsu",
+        "rotta"
     ],
     [
         "hiihtää",
@@ -97,12 +101,12 @@ var words = [
         "20"
     ],
     [
-        "auurinkopaistaa",
+        "aurinkopaistaa",
         "millainensääon",
         "onhuonosää",
         "onhyväsää",
         "onkuuma",
-        "onkylmää",
+        "onkylmä",
         "onpilvistä",
         "sataa",
         "sataalunta",
@@ -129,20 +133,20 @@ var spriteMap = [
 
 
 var audios=
-[
-    'Sounds/English/Animals/ENhamahakki.mp3',
-    'Sounds/English/Animals/ENhevonen.mp3',
-    'Sounds/English/Animals/ENhiiri.mp3',
-    'Sounds/English/Animals/ENkarme.mp3',
-    'Sounds/English/Animals/ENkala.mp3',
-    'Sounds/English/Animals/ENkani.mp3',
-    'Sounds/English/Animals/ENkissa.mp3',
-    'Sounds/English/Animals/ENkoira.mp3',
-    'Sounds/English/Animals/ENlintu.mp3',
-    'Sounds/English/Animals/ENlisko.mp3',
-    'Sounds/English/Animals/ENmarsu.mp3',
-    'Sounds/English/Animals/ENrotta.mp3',
-]
+    [
+        'Sounds/English/Animals/ENhamahakki.mp3',
+        'Sounds/English/Animals/ENhevonen.mp3',
+        'Sounds/English/Animals/ENhiiri.mp3',
+        'Sounds/English/Animals/ENkarme.mp3',
+        'Sounds/English/Animals/ENkala.mp3',
+        'Sounds/English/Animals/ENkani.mp3',
+        'Sounds/English/Animals/ENkissa.mp3',
+        'Sounds/English/Animals/ENkoira.mp3',
+        'Sounds/English/Animals/ENlintu.mp3',
+        'Sounds/English/Animals/ENlisko.mp3',
+        'Sounds/English/Animals/ENmarsu.mp3',
+        'Sounds/English/Animals/ENrotta.mp3',
+    ]
 
 var feedbackAudio=[
     'Sounds/English/Feedback/ENgoodwork.mp3',
@@ -163,3 +167,42 @@ var sentences = [
     "guinea pig",
     "rat"
 ]
+
+function GetFiles(language, subject){
+    var allSounds=[]
+    for(i = 0; i < words[subject].length; i++){
+        var fileName = "Sounds/" + languages[language] + "/" + folders[subject] + "/" + languageShorts[language];
+        allSounds[i] = GetFile(fileName, words[subject][i], language);
+    }
+    return allSounds;
+}
+
+function GetFile(path, name, i){
+    var wholePath;
+
+    for(o = 0; o < 2; o++){
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        wholePath = path+name+"."+fileTypes[i];
+
+        if(UrlExists( wholePath))
+            return  wholePath;
+
+        name = name.charAt(0).toLowerCase() + name.slice(1);
+         wholePath = path+name+"."+fileTypes[i];
+
+        if(UrlExists( wholePath))
+            return  wholePath;
+
+
+        name = name.replace(/ä/g, "a").replace(/ö/g, "o");
+        console.log(name);
+    }
+}
+
+function UrlExists(url)
+{
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    return http.status != 404;
+}
