@@ -236,12 +236,14 @@ function CreateTexts(){
 }
 
 function CreateText(i){
-    var button = document.createElement("button");
+    var button = document.createElement("input");
     button.style.fontSize = 40;
 
     body.appendChild(button);
     button.style.position = "absolute";
+    button.type="image";
     button.style.display = "none";
+    button.src = "Art/Pelit/Speaker_Icon.svg"
 
     AddHandler(button, i, false);
 
@@ -281,7 +283,6 @@ function CreateImages()
         button.style.width = 100 + "px";
         button.style.height = 100 + "px";
         button.className = baseButtonClass;
-        button.style.color = "rgb(255,0,0)"
 
         button.src = spriteMap[i]; 
 
@@ -356,7 +357,7 @@ function Animation(){
             animationDone = false;
             clearInterval(animation);
             animationOn = false;
-            ButtonPress(chosen, true);
+            ButtonPress(chosen, false);
         }
         times = 0;
     }
