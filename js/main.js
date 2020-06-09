@@ -48,8 +48,7 @@ var optionsAmount;
 
 function Start() {
     LoadParameters();
-    console.log(subject);
-    var correctSounds = GetFiles(language, subject);
+    var correctSounds = GetSounds(language, subject);
     CreateAudios(correctSounds, sounds);
     CreateAudios(feedbackAudio, feedbackSound);
     CreateImages();
@@ -61,7 +60,7 @@ function Start() {
 
     setTimeout(function () {
         Resize();
-    },25);
+    },100);
 }
 
 function Resize()
@@ -140,10 +139,10 @@ function LoadParameters(){
     const params = new URLSearchParams(window.location.search);
     language = params.get("l");
     subject = params.get("g");
-    
+
     if(language === undefined || subject === null)
         language = 0;
-    
+
     if(subject === undefined || subject === null)
         subject = 0;
     console.log(subject);
@@ -229,18 +228,18 @@ function ButtonPress(i, isImage)
 }
 
 function CreateTexts(){
-    for(i = 0; i < sentences.length; i++){
+    for(i = 0; i < words[subject].length; i++){
         texts.push(CreateText(i));
     }
 }
 
 function CreateText(i){
     var button = document.createElement("button");
-    button.innerHTML = sentences[i];
     button.style.fontSize = 40;
 
     body.appendChild(button);
     button.style.position = "absolute";
+    button.style.display = "none";
 
     AddHandler(button, i, false);
 
@@ -268,6 +267,7 @@ function CreateAudio(i, source)
 
 function CreateImages()
 {
+    var spriteMap = GetImages(subject);
     for(i = 0; i < spriteMap.length; i++)
     {
         var button = document.createElement("input");

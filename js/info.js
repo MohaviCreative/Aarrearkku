@@ -114,88 +114,74 @@ var words = [
     ]
 ]
 
-
-
-var spriteMap = [
-    "Art/Eläimet/Hämähäkki_väri.jpg",
-    "Art/Eläimet/Hevonen_väri.jpg",
-    "Art/Eläimet/Hiiri_väri.jpg",
-    "Art/Eläimet/Käärme_väri.jpg",
-    "Art/Eläimet/Kala_väri.jpg",
-    "Art/Eläimet/Kani_väri.jpg",
-    "Art/Eläimet/Kissa_väri.jpg",
-    "Art/Eläimet/Koira_väri.jpg",
-    "Art/Eläimet/Lintu_väri.jpg",
-    "Art/Eläimet/Lisko_väri.jpg",
-    "Art/Eläimet/Marsu_väri.jpg",
-    "Art/Eläimet/Rotta_väri.jpg"
-]
-
-
-var audios=
-    [
-        'Sounds/English/Animals/ENhamahakki.mp3',
-        'Sounds/English/Animals/ENhevonen.mp3',
-        'Sounds/English/Animals/ENhiiri.mp3',
-        'Sounds/English/Animals/ENkarme.mp3',
-        'Sounds/English/Animals/ENkala.mp3',
-        'Sounds/English/Animals/ENkani.mp3',
-        'Sounds/English/Animals/ENkissa.mp3',
-        'Sounds/English/Animals/ENkoira.mp3',
-        'Sounds/English/Animals/ENlintu.mp3',
-        'Sounds/English/Animals/ENlisko.mp3',
-        'Sounds/English/Animals/ENmarsu.mp3',
-        'Sounds/English/Animals/ENrotta.mp3',
-    ]
-
 var feedbackAudio=[
-    'Sounds/English/Feedback/ENgoodwork.mp3',
-    'Sounds/English/Feedback/ENtryagain.mp3'
+    'ENgoodwork.mp3',
+    'ENtryagain.mp3'
 ]
 
-var sentences = [
-    "spider",
-    "horse",
-    "mouse",
-    "snake",
-    "fish",
-    "rabbit",
-    "cat",
-    "dog",
-    "bird",
-    "lizard",
-    "guinea pig",
-    "rat"
-]
+function GetSounds(language, subject){
+    var path = "Sounds/" + languages[language] + "/" + folders[subject] + "/" + languageShorts[language];
 
-function GetFiles(language, subject){
-    var allSounds=[]
-    for(i = 0; i < words[subject].length; i++){
-        var fileName = "Sounds/" + languages[language] + "/" + folders[subject] + "/" + languageShorts[language];
-        allSounds[i] = GetFile(fileName, words[subject][i], language);
-    }
-    return allSounds;
+    return GetFiles(fileTypes[language], path, words[subject]);
 }
 
-function GetFile(path, name, i){
+function GetImages(subject){
+    var path = "Art/" + folders[subject] + "/";
+    return GetFiles("jpg", path, words[subject], "_väri");
+}
+
+function GetFiles(fileType, path, wordList, extra){
+    var allFiles = []
+    for(i = 0; i < wordList.length; i++){
+        allFiles[i] = GetFile(path, wordList[i] ,fileType, extra);
+    }
+    return allFiles;
+}
+
+function GetFile(path, actualName, fileType, extra){
     var wholePath;
 
     for(o = 0; o < 2; o++){
+        var name =  actualName;
+        if(o == 1)
+            name = name.replace(/ä/g, "a").replace(/ö/g, "o");
+
         name = name.charAt(0).toUpperCase() + name.slice(1);
-        wholePath = path+name+"."+fileTypes[i];
+
+        if(extra != undefined){
+
+
+            wholePath = path + name + extra + "." + fileType;
+
+            if(UrlExists( wholePath))
+                return  wholePath;
+        }
+
+        wholePath = path + name + "." + fileType;
 
         if(UrlExists( wholePath))
             return  wholePath;
 
         name = name.charAt(0).toLowerCase() + name.slice(1);
-         wholePath = path+name+"."+fileTypes[i];
 
-        if(UrlExists( wholePath))
+
+
+        if(extra != undefined){
+
+            wholePath = path + name + extra + "." + fileType;
+
+            if(UrlExists( wholePath))
+                return  wholePath;
+        }
+
+        wholePath = path + name +  "."+  fileType;
+
+        if(UrlExists(wholePath))
             return  wholePath;
 
-
-        name = name.replace(/ä/g, "a").replace(/ö/g, "o");
-        console.log(name);
+        if(o==1){
+            console.log("Couldn't find file:\n" + name + "." + fileType);
+        }
     }
 }
 
