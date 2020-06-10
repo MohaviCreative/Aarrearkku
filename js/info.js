@@ -139,7 +139,6 @@ function GetFiles(fileType, path, wordList, extra){
     var allFiles = []
     for(i = 0; i < wordList.length; i++){
         allFiles[i] = GetFile(path, wordList[i] ,fileType, extra);
-        console.log(allFiles[i]);
     }
     return allFiles;
 }
@@ -186,7 +185,7 @@ function GetFile(path, actualName, fileType, extra){
             return  wholePath;
 
         if(o==1){
-            console.log("Couldn't find file:\n" + name + "." + fileType);
+            console.log("Couldn't find file:\n" + name + "." + fileType );
         }
     }
 }

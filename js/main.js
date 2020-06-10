@@ -6,6 +6,11 @@ var random = [];
 var body = document.getElementsByTagName("body")[0];
 var parent = document.createElement("div");
 var animationOn = false;
+var thumb;
+var thumbOrigin;
+var thumbSize = 0;
+var thumbRotation = 0;
+var thumbAnim;
 const baseButtonClass = "w3-button w3-round-large ";
 body.append(parent);
 parent.style.position = "absolute";
@@ -51,11 +56,13 @@ function Start() {
     var correctSounds = GetSounds(language, subject);
     CreateAudios(correctSounds, sounds);
     var correctFeedback = GetFeedback(language);
-    CreateAudios(correctFeedback, feedbackSound);
-    console.log(correctFeedback);
+    CreateAudios(correctFeedback, feedbackSound)
     CreateImages();
     CreateTexts();
+    CreateThumb();
+    Usables();
     optionsAmount = Math.min(6, sprite.length);
+
     ChooseRandom();
 
     window.onresize = Resize;
@@ -63,6 +70,41 @@ function Start() {
     setTimeout(function () {
         Resize();
     },100);
+}
+
+function CreateThumb(){
+    thumb = document.createElement("IMG");
+    thumb.src = "Art/Pelit/thumbup.png"
+    body.appendChild(thumb);
+    thumb.style.position = "absolute";
+
+    thumbOrigin = new Image();
+    thumbOrigin.src = thumb.src;
+    thumb.style.width = 0;
+    thumb.style.height = 0;
+}
+
+function Usables(){
+    var test = [texts, sprite, images, sounds];
+    for(i = 0; i < sprite.length; i++){
+        for(o = 0; o < test.length; o++){
+            if(test[o][i] === undefined || test[o][i] === null){
+                for(e = 0; e < test.length; e++){
+                    if(e != 2 && test[e][i] !== undefined && test[e][i] !== null){
+                        test[e][i].parentNode.removeChild(test[e][i]);
+                    }
+                    test[e].splice(i, 1);
+                }
+
+                i--;
+                break;
+            }
+        }
+    }
+
+    for(i = 0; i < sounds.length; i++){
+        console.log(sprite[i].src);
+    }
 }
 
 function Resize()
@@ -92,7 +134,7 @@ function Resize()
 
     if(lines % 2 == 0){
         spaceY = wholeSpace / 2;
-        plusY=1;
+        plusY = 1;
     }
 
 
@@ -116,15 +158,15 @@ function Resize()
             var multiplierX = ((i + plusX) % 2 == 0 ? 1 : -1);
 
 
-            ImageScale(random[num], new THREE.Vector2(40,40), texts);
-            ImagePosition(random[num], new THREE.Vector2(50,25), texts);
+            ImageScales(random[num], new THREE.Vector2(40,40), texts);
+            ImagePositions(random[num], new THREE.Vector2(50,25), texts);
 
 
-            ImageScale(random[num], size, sprite);
+            ImageScales(random[num], size, sprite);
             const imageSize = sprite[random[num]].offsetWidth / parent.offsetWidth;
             var testing = new THREE.Vector2( 50 + (spaceX * imageSize * multiplierX), 
                                             75 + (spaceY * imageSize * multiplierY));
-            ImagePosition(random[num], testing, sprite);
+            ImagePositions(random[num], testing, sprite);
             EditText(texts[random[num]]);
 
             if((i + plusX) % 2 == 0){
@@ -147,10 +189,13 @@ function LoadParameters(){
 
     if(subject === undefined || subject === null)
         subject = 0;
-    console.log(subject);
 }
 
-function ImageScale(i, percentage, array, newSize)
+function ImageScales(i, percentage, array, newSize){
+    ImageScale(array[i], images[i], percentage, newSize);
+}
+
+function ImageScale(image, originImage, percentage, newSize)
 {
     if(newSize == null)
     {
@@ -159,7 +204,7 @@ function ImageScale(i, percentage, array, newSize)
         newSize.divideScalar(multiplier);
     }
 
-    var imageSize = new THREE.Vector2(images[i].width, images[i].height);
+    var imageSize = new THREE.Vector2(originImage.width, originImage.height);
     var aspectRatio = new THREE.Vector2(imageSize.y / imageSize.x, imageSize.x / imageSize.y);
     var aspectSize = new THREE.Vector2(0, 0);
 
@@ -177,11 +222,15 @@ function ImageScale(i, percentage, array, newSize)
         newSize.x = aspectSize.x;
     }
 
-    array[i].style.width = newSize.x + "px";
-    array[i].style.height = newSize.y + "px";
+    image.style.width = newSize.x + "px";
+    image.style.height = newSize.y + "px";
 }
 
-function ImagePosition(i, percentage, array)
+function ImagePositions(i, percentage, array){
+    ImagePosition(array[i], percentage, true);
+}
+
+function ImagePosition(image, percentage, useAnim)
 {
     var animationSpeed = 10;
     var newSize = new THREE.Vector2(parent.offsetWidth, parent.offsetHeight);
@@ -196,13 +245,14 @@ function ImagePosition(i, percentage, array)
 
     newPosition.y = parent.offsetTop + size.y;
 
-    newPosition.x -= array[i].offsetWidth / 2;
-    newPosition.y -= array[i].offsetHeight / 2;
+    newPosition.x -= image.offsetWidth / 2;
+    newPosition.y -= image.offsetHeight / 2;
 
-    newPosition.x += animationX*animationSpeed;
+    if(useAnim)
+        newPosition.x += animationX*animationSpeed;
 
-    array[i].style.left = newPosition.x + "px";
-    array[i].style.top = newPosition.y + "px";
+    image.style.left = newPosition.x + "px";
+    image.style.top = newPosition.y + "px";
 }
 
 function ButtonPress(i, isImage)
@@ -216,6 +266,7 @@ function ButtonPress(i, isImage)
         if(chosen == i){
             PlaySound(feedbackSound,0);
             animationOn = true;
+            thumbAnim = setInterval(ThumbAnim, 1);
             setTimeout(function () {
                 animation = setInterval(Animation, 1);
             }, feedbackSound[0].duration * 1000);
@@ -230,8 +281,8 @@ function ButtonPress(i, isImage)
 }
 
 function CreateTexts(){
-    for(i = 0; i < words[subject].length; i++){
-        texts.push(CreateText(i));
+    for(i = 0; i < sprite.length; i++){
+        texts[i] = CreateText(i);
     }
 }
 
@@ -264,8 +315,12 @@ function CreateAudios(usedAudios, putAudios)
 
 function CreateAudio(i, source)
 {
+    if(source === undefined || source === null)
+        return undefined;
+
     var theSound = document.createElement("audio");
     theSound.src = source;
+
     return theSound;
 }
 
@@ -274,6 +329,14 @@ function CreateImages()
     var spriteMap = GetImages(subject);
     for(i = 0; i < spriteMap.length; i++)
     {
+        if(spriteMap[i] === undefined || sounds[i] === undefined)
+        {
+            spriteMap.splice(i, 1);
+            sounds.splice(i, 1);
+            i--;
+            continue;
+        }
+
         var button = document.createElement("input");
 
         button.type = "image";
@@ -361,6 +424,44 @@ function Animation(){
         }
         times = 0;
     }
+}
+
+var thumbTimes = 0;
+const thumbMax = [150,250,150];
+var thumbState = 0; 
+function ThumbAnim(){
+    thumbTimes++;
+    var currentTimes = thumbTimes / thumbMax[thumbState];
+
+    switch(thumbState){
+        case 0:
+            thumbRotation = 360 * currentTimes;
+            thumbSize = 50 * currentTimes;
+            break;
+        case 2:
+            thumbRotation = 360 * (1 - currentTimes);
+            thumbSize = 50 * (1 - currentTimes);
+            break;
+    }
+
+    if(thumbTimes>= thumbMax[thumbState]){
+        thumbTimes = 0;
+        thumbState = (thumbState + 1) % 3;
+        console.log(thumbState);
+
+        if(thumbState == 0){
+            clearInterval(thumbAnim);
+        }
+    }
+
+    ImagePosition(thumb, new THREE.Vector2(50,50), false);
+    ImageScale(thumb, thumbOrigin, new THREE.Vector2(thumbSize,thumbSize));
+
+    thumb.style.webkitTransform = 'rotate('+thumbRotation+'deg)'; 
+    thumb.style.mozTransform    = 'rotate('+thumbRotation+'deg)'; 
+    thumb.style.msTransform     = 'rotate('+thumbRotation+'deg)'; 
+    thumb.style.oTransform      = 'rotate('+thumbRotation+'deg)'; 
+    thumb.style.transform       = 'rotate('+thumbRotation+'deg)'; 
 }
 
 function PlaySound(array, i){
