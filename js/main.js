@@ -1,5 +1,5 @@
 const multiplier = 100;
-var screenSize = new THREE.Vector2(0.9, 0.9);
+var screenSize = new THREE.Vector2(0.9, 0.8);
 var border;
 var random = [];
 // 2. Append somewhere
@@ -16,8 +16,8 @@ body.append(parent);
 parent.style.position = "absolute";
 //parent.style.backgroundColor = "rgba(0,255,0,0.2)";
 
-body.style.overflowY = "hidden";
-body.style.overflowX = "hidden";
+parent.style.overflowY = "hidden";
+parent.style.overflowX = "hidden";
 var chosen;
 var animationX = 0;
 var animation;
@@ -74,8 +74,8 @@ function Start() {
 
 function CreateThumb(){
     thumb = document.createElement("IMG");
-    thumb.src = "Art/Pelit/thumbup.png"
-    body.appendChild(thumb);
+    thumb.src = "Art/WebGame/thumbup.png"
+    parent.appendChild(thumb);
     thumb.style.position = "absolute";
 
     thumbOrigin = new Image();
@@ -101,10 +101,6 @@ function Usables(){
             }
         }
     }
-
-    for(i = 0; i < sounds.length; i++){
-        console.log(sprite[i].src);
-    }
 }
 
 function Resize()
@@ -116,24 +112,23 @@ function Resize()
     const wSize = new THREE.Vector2(w.x, w.y).multiply(screenSize);
     border = new THREE.Vector2(1 - screenSize.x, 1 - screenSize.y)
     border.multiply(w);
-    border.divideScalar(2);
 
     parent.style.width = wSize.x; 
     parent.style.height = wSize.y;
-    parent.style.left = border.x;
-    parent.style.top = border.y;
+    parent.style.left = border.x * 0.5;
+    parent.style.top = border.y *0.9;
 
     const maxCell = optionsAmount;
-    const lines = parent.offsetWidth < parent.offsetHeight ? 2 : 1;
+    const lines = parent.offsetWidth*2 < parent.offsetHeight*3 ? 2 : 1;
     const columns = Math.min(sprite.length, maxCell) / lines;
-    const size = new THREE.Vector2(100 / (columns + 1) - 1, 50);
+    const size = new THREE.Vector2(100 / (columns + 1) - 1, 100 / (lines + 1) - 12);
     const wholeSpace = 104;
     var spaceY = 0;
 
     var plusY = 0;
 
     if(lines % 2 == 0){
-        spaceY = wholeSpace / 2;
+        spaceY = wholeSpace/2;
         plusY = 1;
     }
 
@@ -148,10 +143,10 @@ function Resize()
 
         if(columns % 2 == 0){
             spaceX = wholeSpace / 2;
-            plusX=1;
+            plusX = 1;
         }
 
-        var multiplierY = ((o + plusY) % 2 == 0 ? 1 : -1);
+        var multiplierY = (((o + plusY) % 2 == 0) ? 1 : -1);
         for(i = 0; i < columns; i++)
         {
             var num = i + o * columns;
@@ -164,9 +159,12 @@ function Resize()
 
             ImageScales(random[num], size, sprite);
             const imageSize = sprite[random[num]].offsetWidth / parent.offsetWidth;
-            var testing = new THREE.Vector2( 50 + (spaceX * imageSize * multiplierX), 
-                                            75 + (spaceY * imageSize * multiplierY));
-            ImagePositions(random[num], testing, sprite);
+            const sizes = new THREE.Vector2(sprite[random[num]].offsetWidth, sprite[random[num]].offsetHeight);
+            var testing = new THREE.Vector2( 50 , 69 );
+            
+            ImagePositions(random[num], testing, sprite, new THREE.Vector2(spaceX * sizes.x * multiplierX,
+            spaceY * sizes.y * multiplierY).multiplyScalar(0.01),true);
+            
             EditText(texts[random[num]]);
 
             if((i + plusX) % 2 == 0){
@@ -226,11 +224,11 @@ function ImageScale(image, originImage, percentage, newSize)
     image.style.height = newSize.y + "px";
 }
 
-function ImagePositions(i, percentage, array){
-    ImagePosition(array[i], percentage, true);
+function ImagePositions(i, percentage, array, plus){
+    ImagePosition(array[i], percentage, plus, true);
 }
 
-function ImagePosition(image, percentage, useAnim)
+function ImagePosition(image, percentage, plus, useAnim)
 {
     var animationSpeed = 10;
     var newSize = new THREE.Vector2(parent.offsetWidth, parent.offsetHeight);
@@ -241,18 +239,21 @@ function ImagePosition(image, percentage, useAnim)
     size.multiply(percentage).divideScalar(100);
     var newPosition = new THREE.Vector2(0, 0);
 
-    newPosition.x = parent.offsetLeft + size.x;
+    newPosition.x = size.x;
 
-    newPosition.y = parent.offsetTop + size.y;
+    newPosition.y = size.y;
 
     newPosition.x -= image.offsetWidth / 2;
     newPosition.y -= image.offsetHeight / 2;
 
     if(useAnim)
         newPosition.x += animationX*animationSpeed;
+    
+    if(plus !== undefined)
+        newPosition.add(plus);
 
     image.style.left = newPosition.x + "px";
-    image.style.top = newPosition.y + "px";
+    image.style.top = newPosition.y+ "px";
 }
 
 function ButtonPress(i, isImage)
@@ -290,11 +291,11 @@ function CreateText(i){
     var button = document.createElement("input");
     button.style.fontSize = 40;
 
-    body.appendChild(button);
+    parent.appendChild(button);
     button.style.position = "absolute";
     button.type="image";
     button.style.display = "none";
-    button.src = "Art/Pelit/Speaker_Icon.svg"
+    button.src = "Art/WebGame/Speaker_Icon.svg"
 
     AddHandler(button, i, false);
 
@@ -341,7 +342,7 @@ function CreateImages()
 
         button.type = "image";
 
-        body.appendChild(button);
+        parent.appendChild(button);
         button.style.position = "absolute";
         button.style.width = 100 + "px";
         button.style.height = 100 + "px";
@@ -447,21 +448,22 @@ function ThumbAnim(){
     if(thumbTimes>= thumbMax[thumbState]){
         thumbTimes = 0;
         thumbState = (thumbState + 1) % 3;
-        console.log(thumbState);
 
         if(thumbState == 0){
             clearInterval(thumbAnim);
         }
     }
 
-    ImagePosition(thumb, new THREE.Vector2(50,50), false);
-    ImageScale(thumb, thumbOrigin, new THREE.Vector2(thumbSize,thumbSize));
+    if(thumbState != 1){
+        ImagePosition(thumb, new THREE.Vector2(50,50), false);
+        ImageScale(thumb, thumbOrigin, new THREE.Vector2(thumbSize,thumbSize));
 
-    thumb.style.webkitTransform = 'rotate('+thumbRotation+'deg)'; 
-    thumb.style.mozTransform    = 'rotate('+thumbRotation+'deg)'; 
-    thumb.style.msTransform     = 'rotate('+thumbRotation+'deg)'; 
-    thumb.style.oTransform      = 'rotate('+thumbRotation+'deg)'; 
-    thumb.style.transform       = 'rotate('+thumbRotation+'deg)'; 
+        thumb.style.webkitTransform = 'rotate('+thumbRotation+'deg)'; 
+        thumb.style.mozTransform    = 'rotate('+thumbRotation+'deg)'; 
+        thumb.style.msTransform     = 'rotate('+thumbRotation+'deg)'; 
+        thumb.style.oTransform      = 'rotate('+thumbRotation+'deg)'; 
+        thumb.style.transform       = 'rotate('+thumbRotation+'deg)'; 
+    }
 }
 
 function PlaySound(array, i){
