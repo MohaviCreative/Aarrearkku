@@ -1,8 +1,7 @@
-const multiplier = 100;
+var multiplier = 100;
 var screenSize = new THREE.Vector2(0.9, 0.8);
 var border;
 var random = [];
-// 2. Append somewhere
 var body = document.getElementsByTagName("body")[0];
 var parent = document.createElement("div");
 var animationOn = false;
@@ -11,9 +10,9 @@ var thumbOrigin;
 var thumbSize = 0;
 var thumbRotation = 0;
 var thumbAnim;
-const baseButtonClass = "w3-button w3-round-large ";
-body.append(parent);
+var baseButtonClass = "w3-button w3-round-large ";
 parent.style.position = "absolute";
+body.appendChild(parent);
 //parent.style.backgroundColor = "rgba(0,255,0,0.2)";
 
 parent.style.overflowY = "hidden";
@@ -25,6 +24,7 @@ var pressed = [];
 
 var language = -1;
 var subject = -1;
+var lastChosen = -1;
 
 
 var mouseDown = false;
@@ -108,8 +108,8 @@ function Resize()
     //renderer.setSize( window.innerWidth * screenSize.x, window.innerHeight * screenSize.y );
 
 
-    const w = new THREE.Vector2(window.innerWidth, window.innerHeight);
-    const wSize = new THREE.Vector2(w.x, w.y).multiply(screenSize);
+    var w = new THREE.Vector2(window.innerWidth, window.innerHeight);
+    var wSize = new THREE.Vector2(w.x, w.y).multiply(screenSize);
     border = new THREE.Vector2(1 - screenSize.x, 1 - screenSize.y)
     border.multiply(w);
 
@@ -118,11 +118,11 @@ function Resize()
     parent.style.left = border.x * 0.5;
     parent.style.top = border.y *0.9;
 
-    const maxCell = optionsAmount;
-    const lines = parent.offsetWidth*2 < parent.offsetHeight*3 ? 2 : 1;
-    const columns = Math.min(sprite.length, maxCell) / lines;
-    const size = new THREE.Vector2(100 / (columns + 1) - 1, 100 / (lines + 1) - 12);
-    const wholeSpace = 104;
+    var maxCell = optionsAmount;
+    var lines = parent.offsetWidth*2 < parent.offsetHeight*3 ? 2 : 1;
+    var columns = Math.min(sprite.length, maxCell) / lines;
+    var size = new THREE.Vector2(100 / (columns + 1) - 1, 100 / (lines + 1) - 12);
+    var wholeSpace = 104;
     var spaceY = 0;
 
     var plusY = 0;
@@ -133,7 +133,7 @@ function Resize()
     }
 
 
-    const test = Math.min(columns,sprite.length - columns)
+    var test = Math.min(columns,sprite.length - columns)
 
     for(o = 0; o < lines; o++)
     {
@@ -158,13 +158,13 @@ function Resize()
 
 
             ImageScales(random[num], size, sprite);
-            const imageSize = sprite[random[num]].offsetWidth / parent.offsetWidth;
-            const sizes = new THREE.Vector2(sprite[random[num]].offsetWidth, sprite[random[num]].offsetHeight);
+            var imageSize = sprite[random[num]].offsetWidth / parent.offsetWidth;
+            var sizes = new THREE.Vector2(sprite[random[num]].offsetWidth, sprite[random[num]].offsetHeight);
             var testing = new THREE.Vector2( 50 , 69 );
-            
+
             ImagePositions(random[num], testing, sprite, new THREE.Vector2(spaceX * sizes.x * multiplierX,
-            spaceY * sizes.y * multiplierY).multiplyScalar(0.01),true);
-            
+                                                                           spaceY * sizes.y * multiplierY).multiplyScalar(0.01),true);
+
             EditText(texts[random[num]]);
 
             if((i + plusX) % 2 == 0){
@@ -178,15 +178,67 @@ function Resize()
 }
 
 function LoadParameters(){
-    const params = new URLSearchParams(window.location.search);
+    var params = new URLSearchParams(window.location.search);
     language = params.get("l");
     subject = params.get("g");
 
     if(language === undefined || subject === null)
         language = 0;
+    else
+        language = parseInt(language);
 
     if(subject === undefined || subject === null)
         subject = 0;
+    else
+        subject = parseInt(subject);
+
+    var titleText="";
+    switch(subject){
+        case 0:
+            titleText = "Värit";
+            break;
+        case 1:
+            titleText = "Eläimet";
+            break;
+        case 2:
+            titleText = "Harrastukset";
+            break;
+        case 3:
+            titleText = "Numerot"
+            break;
+        case 4:
+            titleText = "Säät"
+            break;
+    }
+
+    titleText+=" ";
+
+    switch(language){
+        case 0:
+            titleText += "ruotsiksi";
+            break;
+        case 1:
+            titleText += "englanniksi";
+            break;
+        case 2:
+            titleText += "saksaksi";
+            break;
+        case 3:
+            titleText += "kiinaksi";
+            break;
+        case 4:
+            titleText += "venäjäksi";
+            break;
+        case 5:
+            titleText += "espanjaksi";
+            break;
+        case 6:
+            titleText += "ranskaksi";
+            break;
+    }
+
+    var title = document.getElementById("title");
+    title.innerHTML = titleText;
 }
 
 function ImageScales(i, percentage, array, newSize){
@@ -248,7 +300,7 @@ function ImagePosition(image, percentage, plus, useAnim)
 
     if(useAnim)
         newPosition.x += animationX*animationSpeed;
-    
+
     if(plus !== undefined)
         newPosition.add(plus);
 
@@ -264,6 +316,8 @@ function ButtonPress(i, isImage)
 
     if(isImage){
         pressed[i] = true;
+        feedbackSound[1].pause();
+        feedbackSound[1].currentTime=0;
         if(chosen == i){
             PlaySound(feedbackSound,0);
             animationOn = true;
@@ -296,6 +350,8 @@ function CreateText(i){
     button.type="image";
     button.style.display = "none";
     button.src = "Art/WebGame/Speaker_Icon.svg"
+    button.style.width  =0 + "px";
+    button.style.height = 0 + "px";
 
     AddHandler(button, i, false);
 
@@ -344,8 +400,8 @@ function CreateImages()
 
         parent.appendChild(button);
         button.style.position = "absolute";
-        button.style.width = 100 + "px";
-        button.style.height = 100 + "px";
+        button.style.width = 0 + "px";
+        button.style.height = 0 + "px";
         button.className = baseButtonClass;
 
         button.src = spriteMap[i]; 
@@ -380,7 +436,7 @@ function ChooseRandom()
         var num = -1
         do{
             num = Math.floor(Math.random() * sprite.length);
-        }while(random.includes(num));
+        }while(random.indexOf(num) >= 0);
         random[i] = num;
         pressed[num] = false;
         sprite[num].style.display = "block";
@@ -401,7 +457,7 @@ function AddHandler(button, i, isImage)
 }
 
 var times = 0;
-const maxTimes = 300;
+var maxTimes = 300;
 var animationDone = false;
 
 function Animation(){
@@ -428,7 +484,7 @@ function Animation(){
 }
 
 var thumbTimes = 0;
-const thumbMax = [150,250,150];
+var thumbMax = [150,250,150];
 var thumbState = 0; 
 function ThumbAnim(){
     thumbTimes++;
@@ -455,7 +511,7 @@ function ThumbAnim(){
     }
 
     if(thumbState != 1){
-        ImagePosition(thumb, new THREE.Vector2(50,50), false);
+        ImagePosition(thumb, new THREE.Vector2(50,50));
         ImageScale(thumb, thumbOrigin, new THREE.Vector2(thumbSize,thumbSize));
 
         thumb.style.webkitTransform = 'rotate('+thumbRotation+'deg)'; 
@@ -485,3 +541,21 @@ function GoToPage(i, o){
 
     window.location.href = '?l=' + o + '&g=' + i;
 }
+
+(function (w) {
+
+    w.URLSearchParams = w.URLSearchParams || function (searchString) {
+        var self = this;
+        self.searchString = searchString;
+        self.get = function (name) {
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(self.searchString);
+            if (results == null) {
+                return null;
+            }
+            else {
+                return decodeURI(results[1]) || 0;
+            }
+        };
+    }
+
+})(window)
