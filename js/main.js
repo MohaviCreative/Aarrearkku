@@ -1,20 +1,30 @@
-const multiplier = 100;
-var screenSize = new THREE.Vector2(0.9, 0.9);
+var multiplier = 100;
+var screenSize = new THREE.Vector2(0.9, 0.8);
 var border;
 var random = [];
-// 2. Append somewhere
 var body = document.getElementsByTagName("body")[0];
 var parent = document.createElement("div");
-body.append(parent);
+var animationOn = false;
+var thumb;
+var thumbOrigin;
+var thumbSize = 0;
+var thumbRotation = 0;
+var thumbAnim;
+var baseButtonClass = "w3-button w3-round-large ";
 parent.style.position = "absolute";
+body.appendChild(parent);
 //parent.style.backgroundColor = "rgba(0,255,0,0.2)";
 
-body.style.overflowY= "hidden";
-body.style.overflowX= "hidden";
+parent.style.overflowY = "hidden";
+parent.style.overflowX = "hidden";
 var chosen;
-var animationX=0;
+var animationX = 0;
 var animation;
-var pressed=[];
+var pressed = [];
+
+var language = -1;
+var subject = -1;
+var lastChosen = -1;
 
 
 var mouseDown = false;
@@ -28,29 +38,69 @@ document.addEventListener( 'mousemove', OnMouseMove, false );
 
 var currentSound = 0;
 var sounds = [];
-CreateAudios(audios, sounds);
 var feedbackSound = [];
-CreateAudios(feedbackAudio, feedbackSound)
 
 
 var texts = [];
-CreateTexts();
 
 
 var sprite = [];
 var images = [];
-CreateImages();
 
-const optionsAmount = Math.min(6, sprite.length);
-
-ChooseRandom();
-Resize();
+var optionsAmount;
 
 
-window.onload = function()
-{
+
+function Start() {
+    LoadParameters();
+    var correctSounds = GetSounds(language, subject);
+    CreateAudios(correctSounds, sounds);
+    var correctFeedback = GetFeedback(language);
+    CreateAudios(correctFeedback, feedbackSound)
+    CreateImages();
+    CreateTexts();
+    CreateThumb();
+    Usables();
+    optionsAmount = Math.min(6, sprite.length);
+
+    ChooseRandom();
+
     window.onresize = Resize;
-    Resize();
+
+    setTimeout(function () {
+        Resize();
+    },100);
+}
+
+function CreateThumb(){
+    thumb = document.createElement("IMG");
+    thumb.src = "Art/WebGame/thumbup.png"
+    parent.appendChild(thumb);
+    thumb.style.position = "absolute";
+
+    thumbOrigin = new Image();
+    thumbOrigin.src = thumb.src;
+    thumb.style.width = 0;
+    thumb.style.height = 0;
+}
+
+function Usables(){
+    var test = [texts, sprite, images, sounds];
+    for(i = 0; i < sprite.length; i++){
+        for(o = 0; o < test.length; o++){
+            if(test[o][i] === undefined || test[o][i] === null){
+                for(e = 0; e < test.length; e++){
+                    if(e != 2 && test[e][i] !== undefined && test[e][i] !== null){
+                        test[e][i].parentNode.removeChild(test[e][i]);
+                    }
+                    test[e].splice(i, 1);
+                }
+
+                i--;
+                break;
+            }
+        }
+    }
 }
 
 function Resize()
@@ -58,33 +108,32 @@ function Resize()
     //renderer.setSize( window.innerWidth * screenSize.x, window.innerHeight * screenSize.y );
 
 
-    const w = new THREE.Vector2(window.innerWidth, window.innerHeight);
-    const wSize = new THREE.Vector2(w.x, w.y).multiply(screenSize);
+    var w = new THREE.Vector2(window.innerWidth, window.innerHeight);
+    var wSize = new THREE.Vector2(w.x, w.y).multiply(screenSize);
     border = new THREE.Vector2(1 - screenSize.x, 1 - screenSize.y)
     border.multiply(w);
-    border.divideScalar(2);
 
     parent.style.width = wSize.x; 
     parent.style.height = wSize.y;
-    parent.style.left = border.x;
-    parent.style.top = border.y;
+    parent.style.left = border.x * 0.5;
+    parent.style.top = border.y *0.9;
 
-    const maxCell = optionsAmount;
-    const lines = parent.offsetWidth < parent.offsetHeight ? 2 : 1;
-    const columns = Math.min(sprite.length, maxCell) / lines;
-    const size = new THREE.Vector2(100 / (columns + 1) - 1, 50);
-    const wholeSpace = 104;
+    var maxCell = optionsAmount;
+    var lines = parent.offsetWidth*2 < parent.offsetHeight*3 ? 2 : 1;
+    var columns = Math.min(sprite.length, maxCell) / lines;
+    var size = new THREE.Vector2(100 / (columns + 1) - 1, 100 / (lines + 1) - 12);
+    var wholeSpace = 104;
     var spaceY = 0;
 
     var plusY = 0;
 
     if(lines % 2 == 0){
-        spaceY = wholeSpace / 2;
-        plusY=1;
+        spaceY = wholeSpace/2;
+        plusY = 1;
     }
 
 
-    const test = Math.min(columns,sprite.length - columns)
+    var test = Math.min(columns,sprite.length - columns)
 
     for(o = 0; o < lines; o++)
     {
@@ -94,25 +143,28 @@ function Resize()
 
         if(columns % 2 == 0){
             spaceX = wholeSpace / 2;
-            plusX=1;
+            plusX = 1;
         }
 
-        var multiplierY = ((o + plusY) % 2 == 0 ? 1 : -1);
+        var multiplierY = (((o + plusY) % 2 == 0) ? 1 : -1);
         for(i = 0; i < columns; i++)
         {
             var num = i + o * columns;
             var multiplierX = ((i + plusX) % 2 == 0 ? 1 : -1);
 
 
-            ImageScale(random[num], new THREE.Vector2(40,40), sprite);
-            ImagePosition(random[num], new THREE.Vector2(50,25), sprite);
+            ImageScales(random[num], new THREE.Vector2(40,40), texts);
+            ImagePositions(random[num], new THREE.Vector2(50,25), texts);
 
 
-            ImageScale(random[num], size, texts);
-            const imageSize = texts[random[num]].offsetWidth / parent.offsetWidth;
-            var testing = new THREE.Vector2( 50 + (spaceX * imageSize * multiplierX), 
-                                            75 + (spaceY * imageSize * multiplierY));
-            ImagePosition(random[num], testing, texts);
+            ImageScales(random[num], size, sprite);
+            var imageSize = sprite[random[num]].offsetWidth / parent.offsetWidth;
+            var sizes = new THREE.Vector2(sprite[random[num]].offsetWidth, sprite[random[num]].offsetHeight);
+            var testing = new THREE.Vector2( 50 , 69 );
+
+            ImagePositions(random[num], testing, sprite, new THREE.Vector2(spaceX * sizes.x * multiplierX,
+                                                                           spaceY * sizes.y * multiplierY).multiplyScalar(0.01),true);
+
             EditText(texts[random[num]]);
 
             if((i + plusX) % 2 == 0){
@@ -125,7 +177,75 @@ function Resize()
     }
 }
 
-function ImageScale(i, percentage, array, newSize)
+function LoadParameters(){
+    var params = new URLSearchParams(window.location.search);
+    language = params.get("l");
+    subject = params.get("g");
+
+    if(language === undefined || subject === null)
+        language = 0;
+    else
+        language = parseInt(language);
+
+    if(subject === undefined || subject === null)
+        subject = 0;
+    else
+        subject = parseInt(subject);
+
+    var titleText="";
+    switch(subject){
+        case 0:
+            titleText = "Värit";
+            break;
+        case 1:
+            titleText = "Eläimet";
+            break;
+        case 2:
+            titleText = "Harrastukset";
+            break;
+        case 3:
+            titleText = "Numerot"
+            break;
+        case 4:
+            titleText = "Säät"
+            break;
+    }
+    
+    titleText+=" ";
+
+    switch(language){
+        case 0:
+            titleText += "ruotsiksi";
+            break;
+        case 1:
+            titleText += "englanniksi";
+            break;
+        case 2:
+            titleText += "saksaksi";
+            break;
+        case 3:
+            titleText += "kiinaksi";
+            break;
+        case 4:
+            titleText += "venäjäksi";
+            break;
+        case 5:
+            titleText += "espanjaksi";
+            break;
+        case 6:
+            titleText += "ranskaksi";
+            break;
+    }
+
+    var title = document.getElementById("title");
+    title.innerHTML = titleText;
+}
+
+function ImageScales(i, percentage, array, newSize){
+    ImageScale(array[i], images[i], percentage, newSize);
+}
+
+function ImageScale(image, originImage, percentage, newSize)
 {
     if(newSize == null)
     {
@@ -134,7 +254,7 @@ function ImageScale(i, percentage, array, newSize)
         newSize.divideScalar(multiplier);
     }
 
-    var imageSize = new THREE.Vector2(images[i].width, images[i].height);
+    var imageSize = new THREE.Vector2(originImage.width, originImage.height);
     var aspectRatio = new THREE.Vector2(imageSize.y / imageSize.x, imageSize.x / imageSize.y);
     var aspectSize = new THREE.Vector2(0, 0);
 
@@ -152,13 +272,17 @@ function ImageScale(i, percentage, array, newSize)
         newSize.x = aspectSize.x;
     }
 
-    array[i].style.width = newSize.x + "px";
-    array[i].style.height = newSize.y + "px";
+    image.style.width = newSize.x + "px";
+    image.style.height = newSize.y + "px";
 }
 
-function ImagePosition(i, percentage, array)
+function ImagePositions(i, percentage, array, plus){
+    ImagePosition(array[i], percentage, plus, true);
+}
+
+function ImagePosition(image, percentage, plus, useAnim)
 {
-    var animationSpeed=10;
+    var animationSpeed = 10;
     var newSize = new THREE.Vector2(parent.offsetWidth, parent.offsetHeight);
 
     var size = new THREE.Vector2(newSize.x, newSize.y);
@@ -167,54 +291,67 @@ function ImagePosition(i, percentage, array)
     size.multiply(percentage).divideScalar(100);
     var newPosition = new THREE.Vector2(0, 0);
 
-    newPosition.x = parent.offsetLeft + size.x;
+    newPosition.x = size.x;
 
-    newPosition.y = parent.offsetTop + size.y;
+    newPosition.y = size.y;
 
-    newPosition.x -= array[i].offsetWidth / 2;
-    newPosition.y -= array[i].offsetHeight / 2;
+    newPosition.x -= image.offsetWidth / 2;
+    newPosition.y -= image.offsetHeight / 2;
 
-    newPosition.x += animationX*animationSpeed;
+    if(useAnim)
+        newPosition.x += animationX*animationSpeed;
 
-    array[i].style.left = newPosition.x + "px";
-    array[i].style.top = newPosition.y + "px";
+    if(plus !== undefined)
+        newPosition.add(plus);
+
+    image.style.left = newPosition.x + "px";
+    image.style.top = newPosition.y+ "px";
 }
 
-/*
-function OnMouseDown()
+function ButtonPress(i, isImage)
 {
-    mouseDown = true;
-    Raycast("rgb(0,255,0)");
-}
+    if(isImage && pressed[i] || animationOn){
+        return;
+    }
 
-function OnMouseUp()
-{
-    var i = Raycast("rgb(255, 0, 0)");
-    mouseDown = false;
-
-    if(i >- 1)
-    {
-        sounds[i].play();
-
-        currentSound++;
-        if(currentSound >= sounds.length){
-            currentSound = 0;
+    if(isImage){
+        pressed[i] = true;
+        if(chosen == i){
+            feedbackSound[1].pause();
+            feedbackSound[1].currentTime=0;
+            PlaySound(feedbackSound,0);
+            animationOn = true;
+            thumbAnim = setInterval(ThumbAnim, 1);
+            setTimeout(function () {
+                animation = setInterval(Animation, 1);
+            }, feedbackSound[0].duration * 1000);
+        }else{
+            PlaySound(feedbackSound, 1);
+            sprite[i].className = baseButtonClass + "w3-red";
+            sprite[i].disabled = true;
         }
+    }else{
+        PlaySound(sounds, i);
     }
 }
 
-function OnMouseMove()
-{
-    Raycast("rgb(255, 0, 0)");
-}*/
+function CreateTexts(){
+    for(i = 0; i < sprite.length; i++){
+        texts[i] = CreateText(i);
+    }
+}
 
 function CreateText(i){
-    var button = document.createElement("button");
-    button.innerHTML = sentences[i];
+    var button = document.createElement("input");
     button.style.fontSize = 40;
 
-    body.appendChild(button);
+    parent.appendChild(button);
     button.style.position = "absolute";
+    button.type="image";
+    button.style.display = "none";
+    button.src = "Art/WebGame/Speaker_Icon.svg"
+    button.style.width  =0 + "px";
+    button.style.height = 0 + "px";
 
     AddHandler(button, i, false);
 
@@ -224,30 +361,6 @@ function CreateText(i){
 function EditText(text){
     text.style.fontSize = text.offsetHeight/4.5;
 }
-
-function ButtonPress(i, isImage)
-{
-    if(!isImage && pressed[i]){
-        return;
-    }
-
-    if(!isImage){
-        pressed[i] = true;
-        if(chosen == i){
-            feedbackSound[0].play();
-            setTimeout(function () {
-                animation = setInterval(Animation, 1);
-            },feedbackSound[0].duration*1000);
-        }else{
-            feedbackSound[1].play();
-            texts[i].className = "w3-button w3-round-large w3-red";
-        }
-    }else{
-        sounds[i].play();
-    }
-}
-
-
 
 function CreateAudios(usedAudios, putAudios)
 {
@@ -259,30 +372,37 @@ function CreateAudios(usedAudios, putAudios)
 
 function CreateAudio(i, source)
 {
+    if(source === undefined || source === null)
+        return undefined;
+
     var theSound = document.createElement("audio");
     theSound.src = source;
-    return theSound;
-}
 
-function CreateTexts(){
-    for(i = 0; i < sentences.length; i++){
-        texts.push(CreateText(i));
-    }
+    return theSound;
 }
 
 function CreateImages()
 {
+    var spriteMap = GetImages(subject);
     for(i = 0; i < spriteMap.length; i++)
     {
+        if(spriteMap[i] === undefined || sounds[i] === undefined)
+        {
+            spriteMap.splice(i, 1);
+            sounds.splice(i, 1);
+            i--;
+            continue;
+        }
+
         var button = document.createElement("input");
 
         button.type = "image";
 
-        body.appendChild(button);
+        parent.appendChild(button);
         button.style.position = "absolute";
-        button.style.width = 100 + "px";
-        button.style.height = 100 + "px";
-        button.className="w3-round-large";
+        button.style.width = 0 + "px";
+        button.style.height = 0 + "px";
+        button.className = baseButtonClass;
 
         button.src = spriteMap[i]; 
 
@@ -316,15 +436,17 @@ function ChooseRandom()
         var num = -1
         do{
             num = Math.floor(Math.random() * sprite.length);
-        }while(random.includes(num));
+        }while(random.indexOf(num) >= 0);
         random[i] = num;
-        texts[num].style.display = "block";
-        texts[num].className = "w3-button w3-light-grey w3-round-large";
         pressed[num] = false;
+        sprite[num].style.display = "block";
+        sprite[num].disabled = false;
+        sprite[num].className = baseButtonClass;
     }
 
     chosen = random[Math.floor(Math.random() * random.length)];
-    sprite[chosen].style.display = "block";
+    texts[chosen].style.display = "block";
+    texts[chosen].className = baseButtonClass + "w3-light-grey";
 }
 
 function AddHandler(button, i, isImage)
@@ -335,7 +457,7 @@ function AddHandler(button, i, isImage)
 }
 
 var times = 0;
-const maxTimes=300;
+var maxTimes = 300;
 var animationDone = false;
 
 function Animation(){
@@ -346,16 +468,94 @@ function Animation(){
     {
         if(!animationDone)
         {
-            animationDone=true;
-            animationX*=-1;
+            animationDone = true;
+            animationX *= -1;
             ChooseRandom();
         }
         else
         {
-            animationDone=false;
+            animationDone = false;
             clearInterval(animation);
-            ButtonPress(chosen, true);
+            animationOn = false;
+            ButtonPress(chosen, false);
         }
         times = 0;
     }
 }
+
+var thumbTimes = 0;
+var thumbMax = [150,250,150];
+var thumbState = 0; 
+function ThumbAnim(){
+    thumbTimes++;
+    var currentTimes = thumbTimes / thumbMax[thumbState];
+
+    switch(thumbState){
+        case 0:
+            thumbRotation = 360 * currentTimes;
+            thumbSize = 50 * currentTimes;
+            break;
+        case 2:
+            thumbRotation = 360 * (1 - currentTimes);
+            thumbSize = 50 * (1 - currentTimes);
+            break;
+    }
+
+    if(thumbTimes>= thumbMax[thumbState]){
+        thumbTimes = 0;
+        thumbState = (thumbState + 1) % 3;
+
+        if(thumbState == 0){
+            clearInterval(thumbAnim);
+        }
+    }
+
+    if(thumbState != 1){
+        ImagePosition(thumb, new THREE.Vector2(50,50));
+        ImageScale(thumb, thumbOrigin, new THREE.Vector2(thumbSize,thumbSize));
+
+        thumb.style.webkitTransform = 'rotate('+thumbRotation+'deg)'; 
+        thumb.style.mozTransform    = 'rotate('+thumbRotation+'deg)'; 
+        thumb.style.msTransform     = 'rotate('+thumbRotation+'deg)'; 
+        thumb.style.oTransform      = 'rotate('+thumbRotation+'deg)'; 
+        thumb.style.transform       = 'rotate('+thumbRotation+'deg)'; 
+    }
+}
+
+function PlaySound(array, i){
+    if(array.length > i && array[i] !== null && array[i] !== undefined)
+    {
+        array[i].play();
+    }
+}
+
+function GoToPage(i, o){
+    if(o === undefined || o === -1)
+        o = language;
+    if(o === -1)
+        o = 0;
+    if(i === undefined || i === -1)
+        i = subject;
+    if(i === -1)
+        i = 0;
+
+    window.location.href = '?l=' + o + '&g=' + i;
+}
+
+(function (w) {
+
+    w.URLSearchParams = w.URLSearchParams || function (searchString) {
+        var self = this;
+        self.searchString = searchString;
+        self.get = function (name) {
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(self.searchString);
+            if (results == null) {
+                return null;
+            }
+            else {
+                return decodeURI(results[1]) || 0;
+            }
+        };
+    }
+
+})(window)

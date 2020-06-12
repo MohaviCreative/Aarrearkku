@@ -1,6 +1,6 @@
 body { 
     margin: 0;
-    background-image: url('../Art/Pelit/piratePatern.png');
+    background-image: url('../Art/WebGame/piratePatern.png');
     background-repeat: repeat;
 }
 canvas { 
@@ -21,13 +21,17 @@ canvas {
     z-index: 1;
 }
 .logoArea img{
-    max-width: 150px;
+    max-width: 75px;
     float: left;
 }
 .logoArea h1{
     max-width: 200px;
     float: left;
-    margin: 50px 20px;
+    margin: 10px;
+}
+
+.dropDown {
+    margin-top: 20px;
 }
 
 .w3-btn, .w3-button {
@@ -44,6 +48,29 @@ body,h1 {font-family: "Raleway", sans-serif}
 
 body, html {height: 100%}
 
+.w3-light-grey {
+    -moz-outline:0 none;
+    outline:0 none;
+}
+
 .w3-red {
     pointer-events: none;
+    -moz-outline:0 none;
+    outline:0 none;
+}
+
+.w3-green {
+    pointer-events: none;
+    -moz-outline:0 none;
+    outline:0 none;
+}
+
+#title{
+    width: 100%;
+    min-width: inherit;
+    max-width: inherit;
+    margin: 10 auto;
+    padding: 1 10;
+    text-align: center;
+    background-color: rgba(255,255,255,0.2);
 }
