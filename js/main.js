@@ -210,7 +210,7 @@ function LoadParameters(){
             titleText = "Säät"
             break;
     }
-
+    
     titleText+=" ";
 
     switch(language){
@@ -316,9 +316,9 @@ function ButtonPress(i, isImage)
 
     if(isImage){
         pressed[i] = true;
-        feedbackSound[1].pause();
-        feedbackSound[1].currentTime=0;
         if(chosen == i){
+            feedbackSound[1].pause();
+            feedbackSound[1].currentTime=0;
             PlaySound(feedbackSound,0);
             animationOn = true;
             thumbAnim = setInterval(ThumbAnim, 1);
