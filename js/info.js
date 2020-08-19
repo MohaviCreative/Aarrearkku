@@ -19,12 +19,12 @@ var languages = [
 ]
 
 var languageShorts = [
-    "SV",
-    "EN",
-    "DE",
+    "sv",
+    "en",
+    "de",
     "ki",
-    "RU",
-    "ES",
+    "ru",
+    "es",
     "fr"
 ]
 
@@ -49,14 +49,14 @@ var words = [
         "sininen",
         "vaaleanpunainen",
         "valkoinen",
-        "vihreä",
+        "vihrea",
         "violetti"
     ],
     [
-        "hämähäkki",
+        "hamahakki",
         "hevonen",
         "hiiri",
-        "käärme",
+        "kaarme",
         "kala",
         "kani",
         "kissa",
@@ -67,11 +67,11 @@ var words = [
         "rotta"
     ],
     [
-        "hiihtää",
+        "hiihtaa",
         "luistella",
-        "pelatajääkiekkoa",
+        "pelatajaakiekkoa",
         "pelatajalkapalloa",
-        "piirtää",
+        "piirtaa",
         "ratsastaa",
         "soittaakitaraa",
         "soittaapianoa",
@@ -102,12 +102,12 @@ var words = [
     ],
     [
         "aurinkopaistaa",
-        "millainensääon",
-        "onhuonosää",
-        "onhyväsää",
+        "millainensaaon",
+        "onhuonosaa",
+        "onhyvasaa",
         "onkuuma",
-        "onkylmä",
-        "onpilvistä",
+        "onkylma",
+        "onpilvista",
         "sataa",
         "sataalunta",
         "tuulee"
@@ -132,7 +132,7 @@ function GetSounds(language, subject){
 
 function GetImages(subject){
     var path = "Art/" + folders[subject] + "/";
-    return GetFiles("jpg", path, words[subject], "_väri");
+    return GetFiles("jpg", path, words[subject], "_vari");
 }
 
 function GetFiles(fileType, path, wordList, extra){
@@ -146,48 +146,23 @@ function GetFiles(fileType, path, wordList, extra){
 function GetFile(path, actualName, fileType, extra){
     var wholePath;
 
-    for(o = 0; o < 2; o++){
-        var name =  actualName;
-        if(o == 1)
-            name = name.replace(/ä/g, "a").replace(/ö/g, "o");
+    var name =  actualName;
 
-        name = name.charAt(0).toUpperCase() + name.slice(1);
-
-        if(extra != undefined){
+    if(extra != undefined){
 
 
-            wholePath = path + name + extra + "." + fileType;
-
-            if(UrlExists( wholePath))
-                return  wholePath;
-        }
-
-        wholePath = path + name + "." + fileType;
+        wholePath = path + name + extra + "." + fileType;
 
         if(UrlExists( wholePath))
             return  wholePath;
-
-        name = name.charAt(0).toLowerCase() + name.slice(1);
-
-
-
-        if(extra != undefined){
-
-            wholePath = path + name + extra + "." + fileType;
-
-            if(UrlExists( wholePath))
-                return  wholePath;
-        }
-
-        wholePath = path + name +  "."+  fileType;
-
-        if(UrlExists(wholePath))
-            return  wholePath;
-
-        if(o==1){
-            console.log("Couldn't find file:\n" + name + "." + fileType );
-        }
     }
+
+    wholePath = path + name + "." + fileType;
+
+    if(UrlExists( wholePath))
+        return  wholePath;
+
+    console.log("Couldn't find file:\n" + name + extra + "." + fileType );
 }
 
 function UrlExists(url)
