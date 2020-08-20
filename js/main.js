@@ -349,7 +349,7 @@ function CreateText(i){
     button.style.position = "absolute";
     button.type="image";
     button.style.display = "none";
-    button.src = "Art/WebGame/Speaker_Icon.svg"
+    button.src = "Art/WebGame/speaker_icon.svg"
     button.style.width  =0 + "px";
     button.style.height = 0 + "px";
 
